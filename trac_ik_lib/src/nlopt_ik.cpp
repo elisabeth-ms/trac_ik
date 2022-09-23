@@ -29,12 +29,11 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 ********************************************************************************/
 
 #include <trac_ik/nlopt_ik.hpp>
-#include <ros/ros.h>
 #include <limits>
 #include <boost/date_time.hpp>
 #include <trac_ik/dual_quaternion.h>
 #include <cmath>
-
+#include <iostream>
 
 
 namespace NLOPT_IK
@@ -206,7 +205,7 @@ NLOPT_IK::NLOPT_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const 
 
   if (chain.getNrOfJoints() < 2)
   {
-    ROS_WARN_THROTTLE(1.0, "NLOpt_IK can only be run for chains of length 2 or more");
+    std::cout<<"WARNING: NLOpt_IK can only be run for chains of length 2 or more"<<std::endl;
     return;
   }
   opt = nlopt::opt(nlopt::LD_SLSQP, _chain.getNrOfJoints());
@@ -300,11 +299,11 @@ void NLOPT_IK::cartSumSquaredError(const std::vector<double>& x, double error[])
   int rc = fksolver.JntToCart(q, currentPose);
 
   if (rc < 0)
-    ROS_FATAL_STREAM("KDL FKSolver is failing: " << q.data);
+    std::cout<<"WARNING: KDL FKSolver is failing: " << q.data<<std::endl;
 
   if (std::isnan(currentPose.p.x()))
   {
-    ROS_ERROR("NaNs from NLOpt!!");
+    std::cout<<"ERROR: NaNs from NLOpt!!"<<std::endl;
     error[0] = std::numeric_limits<float>::max();
     progress = -1;
     return;
@@ -351,12 +350,11 @@ void NLOPT_IK::cartL2NormError(const std::vector<double>& x, double error[])
   int rc = fksolver.JntToCart(q, currentPose);
 
   if (rc < 0)
-    ROS_FATAL_STREAM("KDL FKSolver is failing: " << q.data);
-
+    std::cout<<"WARNING: KDL FKSolver is failing: " << q.data<<std::endl;
 
   if (std::isnan(currentPose.p.x()))
   {
-    ROS_ERROR("NaNs from NLOpt!!");
+    std::cout<<"ERROR: NaNs from NLOpt!!"<<std::endl;
     error[0] = std::numeric_limits<float>::max();
     progress = -1;
     return;
@@ -404,12 +402,12 @@ void NLOPT_IK::cartDQError(const std::vector<double>& x, double error[])
   int rc = fksolver.JntToCart(q, currentPose);
 
   if (rc < 0)
-    ROS_FATAL_STREAM("KDL FKSolver is failing: " << q.data);
+    std::cout<<"WARNING: KDL FKSolver is failing: "<< q.data<<std::endl;
 
 
   if (std::isnan(currentPose.p.x()))
   {
-    ROS_ERROR("NaNs from NLOpt!!");
+    std::cout<<"ERROR: NaNs from NLOpt!!"<<std::endl;
     error[0] = std::numeric_limits<float>::max();
     progress = -1;
     return;
@@ -461,13 +459,13 @@ int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL
 
   if (chain.getNrOfJoints() < 2)
   {
-    ROS_ERROR_THROTTLE(1.0, "NLOpt_IK can only be run for chains of length 2 or more");
+    std::cout<<"ERROR: NLOpt_IK can only be run for chains of length 2 or more"<<std::endl;
     return -3;
   }
 
   if (q_init.data.size() != types.size())
   {
-    ROS_ERROR_THROTTLE(1.0, "IK seeded with wrong number of joints.  Expected %d but got %d", (int)types.size(), (int)q_init.data.size());
+    std::cout<<"ERROR: IK seeded with wrong number of joints.  Expected "<< (int)types.size()<<" but got "<< (int)q_init.data.size()<<std::endl;
     return -3;
   }
 

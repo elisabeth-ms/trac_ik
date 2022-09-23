@@ -30,8 +30,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <trac_ik/kdl_tl.hpp>
 #include <boost/date_time.hpp>
-#include <ros/ros.h>
 #include <limits>
+#include <boost/math/tools/minima.hpp>
 
 namespace KDL
 {
