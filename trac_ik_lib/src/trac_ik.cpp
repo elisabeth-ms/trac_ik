@@ -32,13 +32,14 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <trac_ik/trac_ik.hpp>
 #include <boost/date_time.hpp>
 #include <Eigen/Geometry>
-#include <ros/ros.h>
+//#include <ros/ros.h>
 #include <limits>
-#include <kdl_parser/kdl_parser.hpp>
-#include <urdf/model.h>
-
+//#include <kdl_parser/kdl_parser.hpp>
+//#include <urdf/model.h>
+#include <iostream>
 namespace TRAC_IK
 {
+/**
 
 TRAC_IK::TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& URDF_param, double _maxtime, double _eps, SolveType _type) :
   initialized(false),
@@ -128,7 +129,7 @@ TRAC_IK::TRAC_IK(const std::string& base_link, const std::string& tip_link, cons
 
   initialize();
 }
-
+**/
 
 TRAC_IK::TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, SolveType _type):
   initialized(false),
@@ -145,10 +146,13 @@ TRAC_IK::TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KD
 void TRAC_IK::initialize()
 {
 
+
   assert(chain.getNrOfJoints() == lb.data.size());
   assert(chain.getNrOfJoints() == ub.data.size());
 
   jacsolver.reset(new KDL::ChainJntToJacSolver(chain));
+
+
   nl_solver.reset(new NLOPT_IK::NLOPT_IK(chain, lb, ub, maxtime, eps, NLOPT_IK::SumSq));
   iksolver.reset(new KDL::ChainIkSolverPos_TL(chain, lb, ub, maxtime, eps, true, true));
 
@@ -417,7 +421,7 @@ int TRAC_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL:
 
   if (!initialized)
   {
-    ROS_ERROR("TRAC-IK was not properly initialized with a valid chain or limits.  IK cannot proceed");
+    std::cout<<"TRAC-IK was not properly initialized with a valid chain or limits.  IK cannot proceed"<<std::endl;;
     return -1;
   }
 
@@ -467,5 +471,9 @@ TRAC_IK::~TRAC_IK()
     task1.join();
   if (task2.joinable())
     task2.join();
+}
+
+TRAC_IK::TRAC_IK(){
+
 }
 }
